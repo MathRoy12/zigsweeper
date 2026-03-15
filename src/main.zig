@@ -15,6 +15,10 @@ pub fn main() !void {
     rl.initWindow(width, heigth, "zigsweeper");
     defer rl.closeWindow();
 
+    const icon = try rl.loadImage("ressource/img/Mine.png");
+    defer rl.unloadImage(icon);
+    rl.setWindowIcon(icon);
+
     rl.setTargetFPS(60);
 
     initGrid();
