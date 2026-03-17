@@ -1,7 +1,7 @@
 const rl = @import("raylib");
 
 const cell_state = enum { Hidden, Revealed, Flaged, WasMine, WrongFlag };
-pub const cell_value = enum { One, Two, Three, Four, Five, Six, Seven, Eight, Mine, Empty };
+pub const cell_value = enum(u8) { Empty = 0, One = 1, Two = 2, Three = 3, Four = 4, Five = 5, Six = 6, Seven = 7, Eight = 8, Mine = 9 };
 
 var texts: [14]rl.Texture2D = [_]rl.Texture2D{undefined} ** 14;
 
@@ -26,16 +26,16 @@ pub const Cell = struct {
     }
 
     pub fn InitCellText() !void {
-        texts[0] = try rl.loadTexture("ressource/One.png");
-        texts[1] = try rl.loadTexture("ressource/Two.png");
-        texts[2] = try rl.loadTexture("ressource/Three.png");
-        texts[3] = try rl.loadTexture("ressource/Four.png");
-        texts[4] = try rl.loadTexture("ressource/Five.png");
-        texts[5] = try rl.loadTexture("ressource/Six.png");
-        texts[6] = try rl.loadTexture("ressource/Seven.png");
-        texts[7] = try rl.loadTexture("ressource/Eight.png");
-        texts[8] = try rl.loadTexture("ressource/Mine.png");
-        texts[9] = try rl.loadTexture("ressource/Empty.png");
+        texts[0] = try rl.loadTexture("ressource/Empty.png");
+        texts[1] = try rl.loadTexture("ressource/One.png");
+        texts[2] = try rl.loadTexture("ressource/Two.png");
+        texts[3] = try rl.loadTexture("ressource/Three.png");
+        texts[4] = try rl.loadTexture("ressource/Four.png");
+        texts[5] = try rl.loadTexture("ressource/Five.png");
+        texts[6] = try rl.loadTexture("ressource/Six.png");
+        texts[7] = try rl.loadTexture("ressource/Seven.png");
+        texts[8] = try rl.loadTexture("ressource/Eight.png");
+        texts[9] = try rl.loadTexture("ressource/Mine.png");
         texts[10] = try rl.loadTexture("ressource/Cell.png");
         texts[11] = try rl.loadTexture("ressource/Flag.png");
         texts[12] = try rl.loadTexture("ressource/WasMine.png");

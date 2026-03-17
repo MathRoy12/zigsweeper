@@ -91,15 +91,16 @@ pub fn InitGrid(clickedCellX: u64, clickedCellY: u64, nbMine: u16) !void {
         y = rng.intRangeLessThan(u8, 0, 16);
 
         //if cell to close of first clicked cell change mine
-        if (x > clickedCellX - 2 and x < clickedCellX + 2 and y > clickedCellY - 2 and y < clickedCellY + 2) continue :mine_set;
+        if (x >= @as(i65, clickedCellX) - 2 and x <= @as(i65, clickedCellX) + 2 and y >= @as(i65, clickedCellY) - 2 and y <= @as(i65, clickedCellY) + 2) continue :mine_set;
 
         currentCell = grid[x][y];
 
         if (currentCell.value == .Mine) continue :mine_set;
         nearCellCpt = 0;
-        var i: i8 = @intCast(x - 1);
-        var j: i8 = @intCast(y - 1);
+        var i: i16 = @as(i16, x) - 1;
+        var j: i16 = undefined;
         while (i <= x + 1) : (i += 1) {
+            j = @as(i16, y) - 1;
             mine_count: while (j <= y + 1) : (j += 1) {
                 if (i < 0 or i >= 30 or j < 0 or j >= 16) continue :mine_count;
                 if (grid[@intCast(i)][@intCast(j)].value == .Mine)
@@ -110,14 +111,18 @@ pub fn InitGrid(clickedCellX: u64, clickedCellY: u64, nbMine: u16) !void {
         }
 
         currentCell.value = .Mine;
-        i = @intCast(x - 1);
-        j = @intCast(y - 1);
 
+        i = @as(i16, x) - 1;
         while (i <= x + 1) : (i += 1) {
+            j = @as(i16, y) - 1;
             update_count: while (j <= y + 1) : (j += 1) {
-                if ((x < 0 or x >= 30 or y < 0 or y >= 16) or currentCell.value == .Mine) continue :update_count;
+                if ((i < 0 or i >= 30 or j < 0 or j >= 16) or grid[@intCast(i)][@intCast(j)].value == .Mine) continue :update_count;
 
                 //augmenter la valeur de la cellule de 1 mine proche
+                //const f = grid[@intCast(i)][@intCast(j)].value;
+                //var p: u8 = @intFromEnum(f);
+                //p += 1;
+
                 cellValue = @intFromEnum(grid[@intCast(i)][@intCast(j)].value);
                 grid[@intCast(i)][@intCast(j)].value = @enumFromInt(cellValue + 1);
             }
@@ -132,8 +137,11 @@ pub fn IdleLoop() !void {
             grid[x][y].Draw();
         }
     }
-
     if (!rl.isMouseButtonReleased(rl.MouseButton.left)) return;
+
+    mouseX = @intCast(rl.getMouseX());
+    mouseY = @intCast(rl.getMouseY());
+
     try InitGrid(@divTrunc(mouseX, 40), @divTrunc(mouseY, 40), 99);
 
     for (0..grid.len) |x| {
