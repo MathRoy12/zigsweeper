@@ -1,19 +1,19 @@
 const rl = @import("raylib");
 
-const CellState = enum { Hidden, Revealed, Flaged, WasMine, WrongFlag };
-pub const CellValue = enum { One, Two, Three, Four, Five, Six, Seven, Eight, Mine, Empty };
+const cell_state = enum { Hidden, Revealed, Flaged, WasMine, WrongFlag };
+pub const cell_value = enum { One, Two, Three, Four, Five, Six, Seven, Eight, Mine, Empty };
 
 var texts: [14]rl.Texture2D = [_]rl.Texture2D{undefined} ** 14;
 
-const isInitialized = false;
+const is_initialized = false;
 
 pub const Cell = struct {
-    state: CellState,
-    value: CellValue,
+    state: cell_state,
+    value: cell_value,
 
     _rect: rl.Rectangle,
 
-    pub fn Init(value: CellValue, x: f32, y: f32) Cell {
+    pub fn Init(value: cell_value, x: f32, y: f32) Cell {
         const rect: rl.Rectangle = .{
             .x = x,
             .y = y,
@@ -51,7 +51,7 @@ pub const Cell = struct {
         };
     }
 
-    pub fn Reveal(self: *Cell) CellValue {
+    pub fn Reveal(self: *Cell) cell_value {
         if (self.state == .Hidden) {
             self.state = .Revealed;
         }

@@ -14,7 +14,7 @@ pub const ImgButton = struct {
         return isCollided and (isLeftClickPressed or isRightClickPressed);
     }
 
-    pub fn isLeftClicked(self: ImgButton) bool {
+    pub fn IsLeftClicked(self: ImgButton) bool {
         const mousePos = rl.getMousePosition();
 
         const isCollided = rl.checkCollisionPointRec(mousePos, self.rect);
@@ -23,7 +23,7 @@ pub const ImgButton = struct {
         return isCollided and isLeftClickReleased;
     }
 
-    pub fn isRightClicked(self: ImgButton) bool {
+    pub fn IsRightClicked(self: ImgButton) bool {
         const mousePos = rl.getMousePosition();
 
         const isCollided = rl.checkCollisionPointRec(mousePos, self.rect);
@@ -32,7 +32,7 @@ pub const ImgButton = struct {
         return isCollided and isRightClickReleased;
     }
 
-    pub fn setTexture(self: ImgButton, img: rl.Image) void {
+    pub fn SetTexture(self: ImgButton, img: rl.Image) void {
         if (self._texture) {
             rl.unloadTexture(self._texture);
         }
@@ -41,7 +41,7 @@ pub const ImgButton = struct {
         self._texture = rl.loadTextureFromImage(sizedImg);
     }
 
-    pub fn draw(self: ImgButton) void {
+    pub fn Draw(self: ImgButton) void {
         rl.drawTexture(self._texture, @round(self.rect.x), @round(self.rect.y), rl.Color.white);
     }
 };

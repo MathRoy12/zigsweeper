@@ -4,15 +4,15 @@ const rl = @import("raylib");
 const Cell = @import("ui/cell.zig").Cell;
 
 const width = 1200;
-const heigth = 640;
+const height = 640;
 
-const mineSpacing: i32 = 45;
+const mine_spacing: i32 = 45;
 const padding: i32 = 78;
 
 var grid: [30][16]Cell = [_][16]Cell{[_]Cell{undefined} ** 16} ** 30;
 
 pub fn main() !void {
-    rl.initWindow(width, heigth, "zigsweeper");
+    rl.initWindow(width, height, "zigsweeper");
     defer rl.closeWindow();
 
     const icon = try rl.loadImage("ressource/img/Mine.png");
@@ -21,7 +21,7 @@ pub fn main() !void {
 
     rl.setTargetFPS(60);
 
-    initGrid();
+    InitGrid();
     try Cell.InitCellText();
 
     var mouseX: u64 = undefined;
@@ -52,7 +52,7 @@ pub fn main() !void {
     }
 }
 
-pub fn initGrid() void {
+pub fn InitGrid() void {
     for (0..30) |x| {
         for (0..16) |y| {
             grid[x][y] = Cell.Init(.Empty, @floatFromInt(x * 40), @floatFromInt(y * 40));
