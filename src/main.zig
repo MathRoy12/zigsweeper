@@ -131,6 +131,28 @@ pub fn InitGrid(clickedCellX: u64, clickedCellY: u64, nbMine: u16) !void {
     }
 }
 
+pub fn RevealCell(x: u64, y: u64) void {
+    if (grid[x][y].state != .Hidden) return;
+
+    const cellValue = grid[x][y].Reveal();
+
+    if (cellValue == .Mine) {
+        currentState = .Lose;
+    }
+
+    if (cellValue == .Empty) {
+        var i: i65 = @as(i65, x) - 1;
+        var j: i65 = undefined;
+        while (i <= x + 1) : (i += 1) {
+            j = @as(i65, y) - 1;
+            reveal_loop: while (j <= y + 1) : (j += 1) {
+                if (i < 0 or i >= 30 or j < 0 or j >= 16) continue :reveal_loop;
+                RevealCell(@intCast(i), @intCast(j));
+            }
+        }
+    }
+}
+
 pub fn IdleLoop() !void {
     for (0..grid.len) |x| {
         for (0..grid[x].len) |y| {
@@ -144,11 +166,7 @@ pub fn IdleLoop() !void {
 
     try InitGrid(@divTrunc(mouseX, 40), @divTrunc(mouseY, 40), 99);
 
-    for (0..grid.len) |x| {
-        for (0..grid[x].len) |y| {
-            _ = grid[x][y].Reveal();
-        }
-    }
+    RevealCell(@divTrunc(mouseX, 40), @divTrunc(mouseY, 40));
 
     currentState = .Playing;
 }
@@ -157,12 +175,43 @@ pub fn PlayingLoop() void {
     mouseX = @intCast(rl.getMouseX());
     mouseY = @intCast(rl.getMouseY());
 
+    const cellX = @divTrunc(mouseX, 40);
+    const cellY = @divTrunc(mouseY, 40);
+
     if (rl.isMouseButtonReleased(rl.MouseButton.left)) {
-        _ = grid[@divTrunc(mouseX, 40)][@divTrunc(mouseY, 40)].Reveal();
+        if (grid[cellX][cellY].state == .Hidden) {
+            RevealCell(cellX, cellY);
+        } else if (grid[cellX][cellY].state == .Revealed) {
+            var flagCount: u64 = 0;
+            var i: i65 = @as(i65, cellX) - 1;
+            var j: i65 = undefined;
+            while (i <= cellX + 1) : (i += 1) {
+                j = @as(i65, cellY) - 1;
+                count_loop: while (j <= cellY + 1) : (j += 1) {
+                    if (i < 0 or i >= 30 or j < 0 or j >= 16) continue :count_loop;
+                    if (grid[@intCast(i)][@intCast(j)].state == .Flaged) flagCount += 1;
+                }
+            }
+            if (flagCount == @intFromEnum(grid[cellX][cellY].value)) {
+                i = @as(i65, cellX) - 1;
+                while (i <= cellX + 1) : (i += 1) {
+                    j = @as(i65, cellY) - 1;
+                    reveal_loop: while (j <= cellY + 1) : (j += 1) {
+                        if (i < 0 or i >= 30 or j < 0 or j >= 16) continue :reveal_loop;
+                        if (grid[@intCast(i)][@intCast(j)].state == .Hidden) RevealCell(@intCast(i), @intCast(j));
+                    }
+                }
+            }
+        }
     }
 
     if (rl.isMouseButtonReleased(rl.MouseButton.right)) {
-        grid[@divTrunc(mouseX, 40)][@divTrunc(mouseY, 40)].Flag();
+        const currentCell = grid[cellX][cellY];
+        if (currentCell.state == .Hidden) {
+            grid[cellX][cellY].Flag();
+        } else if (currentCell.state == .Flaged) {
+            grid[cellX][cellY].state = .Hidden;
+        }
     }
 
     for (0..grid.len) |x| {
