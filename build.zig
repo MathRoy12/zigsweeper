@@ -53,6 +53,14 @@ pub fn build(b: *std.Build) void {
     // by passing `--prefix` or `-p`.
     b.installArtifact(exe);
 
+    // Copy ressource folder to install directory
+    const install_ressource = b.addInstallDirectory(.{
+        .source_dir = b.path("ressource"),
+        .install_dir = .bin,
+        .install_subdir = "ressource",
+    });
+    b.getInstallStep().dependOn(&install_ressource.step);
+
     // This creates a top level step. Top level steps have a name and can be
     // invoked by name when running `zig build` (e.g. `zig build run`).
     // This will evaluate the `run` step rather than the default step.

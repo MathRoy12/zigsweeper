@@ -13,32 +13,33 @@ pub const Cell = struct {
 
     _rect: rl.Rectangle,
 
-    pub fn Init(value: cell_value, x: f32, y: f32) Cell {
-        const rect: rl.Rectangle = .{
+    pub fn Init(self: *Cell, value: cell_value, x: f32, y: f32) void {
+        self._rect = .{
             .x = x,
             .y = y,
             .height = 40,
             .width = 40,
         };
 
-        return Cell{ .state = .Hidden, .value = value, ._rect = rect };
+        self.state = .Hidden;
+        self.value = value;
     }
 
     pub fn InitCellText() !void {
-        texts[0] = try rl.loadTexture("ressource/img/One.png");
-        texts[1] = try rl.loadTexture("ressource/img/Two.png");
-        texts[2] = try rl.loadTexture("ressource/img/Three.png");
-        texts[3] = try rl.loadTexture("ressource/img/Four.png");
-        texts[4] = try rl.loadTexture("ressource/img/Five.png");
-        texts[5] = try rl.loadTexture("ressource/img/Six.png");
-        texts[6] = try rl.loadTexture("ressource/img/Seven.png");
-        texts[7] = try rl.loadTexture("ressource/img/Eight.png");
-        texts[8] = try rl.loadTexture("ressource/img/Mine.png");
-        texts[9] = try rl.loadTexture("ressource/img/Empty.png");
-        texts[10] = try rl.loadTexture("ressource/img/Cell.png");
-        texts[11] = try rl.loadTexture("ressource/img/Flag.png");
-        texts[12] = try rl.loadTexture("ressource/img/WasMine.png");
-        texts[13] = try rl.loadTexture("ressource/img/WrongFlag.png");
+        texts[0] = try rl.loadTexture("ressource/One.png");
+        texts[1] = try rl.loadTexture("ressource/Two.png");
+        texts[2] = try rl.loadTexture("ressource/Three.png");
+        texts[3] = try rl.loadTexture("ressource/Four.png");
+        texts[4] = try rl.loadTexture("ressource/Five.png");
+        texts[5] = try rl.loadTexture("ressource/Six.png");
+        texts[6] = try rl.loadTexture("ressource/Seven.png");
+        texts[7] = try rl.loadTexture("ressource/Eight.png");
+        texts[8] = try rl.loadTexture("ressource/Mine.png");
+        texts[9] = try rl.loadTexture("ressource/Empty.png");
+        texts[10] = try rl.loadTexture("ressource/Cell.png");
+        texts[11] = try rl.loadTexture("ressource/Flag.png");
+        texts[12] = try rl.loadTexture("ressource/WasMine.png");
+        texts[13] = try rl.loadTexture("ressource/WrongFlag.png");
     }
 
     fn getText(self: *Cell) rl.Texture2D {
