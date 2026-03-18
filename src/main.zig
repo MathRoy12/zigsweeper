@@ -118,11 +118,6 @@ pub fn InitGrid(clickedCellX: u64, clickedCellY: u64, nbMine: u16) !void {
             update_count: while (j <= y + 1) : (j += 1) {
                 if ((i < 0 or i >= 30 or j < 0 or j >= 16) or grid[@intCast(i)][@intCast(j)].value == .Mine) continue :update_count;
 
-                //augmenter la valeur de la cellule de 1 mine proche
-                //const f = grid[@intCast(i)][@intCast(j)].value;
-                //var p: u8 = @intFromEnum(f);
-                //p += 1;
-
                 cellValue = @intFromEnum(grid[@intCast(i)][@intCast(j)].value);
                 grid[@intCast(i)][@intCast(j)].value = @enumFromInt(cellValue + 1);
             }
@@ -178,6 +173,7 @@ pub fn PlayingLoop() void {
     const cellX = @divTrunc(mouseX, 40);
     const cellY = @divTrunc(mouseY, 40);
 
+    // Reveal Logic
     if (rl.isMouseButtonReleased(rl.MouseButton.left)) {
         if (grid[cellX][cellY].state == .Hidden) {
             RevealCell(cellX, cellY);
@@ -205,12 +201,39 @@ pub fn PlayingLoop() void {
         }
     }
 
+    //Flag Logic
     if (rl.isMouseButtonReleased(rl.MouseButton.right)) {
         const currentCell = grid[cellX][cellY];
         if (currentCell.state == .Hidden) {
             grid[cellX][cellY].Flag();
         } else if (currentCell.state == .Flaged) {
             grid[cellX][cellY].state = .Hidden;
+        } else if (currentCell.state == .Revealed) {
+            var hiddenCount: u64 = 0;
+            var i: i65 = @as(i65, cellX) - 1;
+            var j: i65 = undefined;
+            var isHidden: bool = false;
+            var isFlaged: bool = false;
+            while (i <= cellX + 1) : (i += 1) {
+                j = @as(i65, cellY) - 1;
+                count_loop: while (j <= cellY + 1) : (j += 1) {
+                    if (i < 0 or i >= 30 or j < 0 or j >= 16) continue :count_loop;
+                    isHidden = grid[@intCast(i)][@intCast(j)].state == .Hidden;
+                    isFlaged = grid[@intCast(i)][@intCast(j)].state == .Flaged;
+
+                    if (isHidden or isFlaged) hiddenCount += 1;
+                }
+            }
+            if (hiddenCount == @intFromEnum(grid[cellX][cellY].value)) {
+                i = @as(i65, cellX) - 1;
+                while (i <= cellX + 1) : (i += 1) {
+                    j = @as(i65, cellY) - 1;
+                    flag_loop: while (j <= cellY + 1) : (j += 1) {
+                        if (i < 0 or i >= 30 or j < 0 or j >= 16) continue :flag_loop;
+                        if (grid[@intCast(i)][@intCast(j)].state == .Hidden) grid[@intCast(i)][@intCast(j)].Flag();
+                    }
+                }
+            }
         }
     }
 
