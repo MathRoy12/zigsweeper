@@ -38,14 +38,15 @@ pub fn main() !void {
 
         switch (currentState) {
             .Idle => {
-                //std.debug.print("starting Idle \n", .{});
                 IdleLoop() catch rl.closeWindow();
             },
             .Playing => {
                 PlayingLoop();
             },
             .Won => {},
-            .Lose => {},
+            .Lose => {
+                loseLoop();
+            },
         }
     }
 }
@@ -60,7 +61,6 @@ pub fn InitGame() !void {
     try Cell.InitCellText();
     for (0..30) |x| {
         for (0..16) |y| {
-            //std.debug.print("creatingCell {any} {any} \n", .{ x, y });
             grid[x][y] = try alloc.create(Cell);
             grid[x][y].Init(.Empty, @floatFromInt(x * 40), @floatFromInt(y * 40));
         }
@@ -71,7 +71,6 @@ pub fn InitGrid(clickedCellX: u64, clickedCellY: u64, nbMine: u16) !void {
     //initialiser toute les Cell à Empty
     for (0..30) |x| {
         for (0..16) |y| {
-            //std.debug.print("creatingCell {any} {any} \n", .{ x, y });
             grid[x][y].value = .Empty;
         }
     }
@@ -91,7 +90,11 @@ pub fn InitGrid(clickedCellX: u64, clickedCellY: u64, nbMine: u16) !void {
         y = rng.intRangeLessThan(u8, 0, 16);
 
         //if cell to close of first clicked cell change mine
-        if (x >= @as(i65, clickedCellX) - 2 and x <= @as(i65, clickedCellX) + 2 and y >= @as(i65, clickedCellY) - 2 and y <= @as(i65, clickedCellY) + 2) continue :mine_set;
+        if (x > @as(i65, clickedCellX) - 2 and
+            x < @as(i65, clickedCellX) + 2 and
+            y > @as(i65, clickedCellY) - 2 and
+            y < @as(i65, clickedCellY) + 2)
+            continue :mine_set;
 
         currentCell = grid[x][y];
 
@@ -132,7 +135,9 @@ pub fn RevealCell(x: u64, y: u64) void {
     const cellValue = grid[x][y].Reveal();
 
     if (cellValue == .Mine) {
+        grid[x][y].state = .WasMine;
         currentState = .Lose;
+        loseReveal();
     }
 
     if (cellValue == .Empty) {
@@ -149,11 +154,7 @@ pub fn RevealCell(x: u64, y: u64) void {
 }
 
 pub fn IdleLoop() !void {
-    for (0..grid.len) |x| {
-        for (0..grid[x].len) |y| {
-            grid[x][y].Draw();
-        }
-    }
+    drawGrid();
     if (!rl.isMouseButtonReleased(rl.MouseButton.left)) return;
 
     mouseX = @intCast(rl.getMouseX());
@@ -236,10 +237,28 @@ pub fn PlayingLoop() void {
             }
         }
     }
+    drawGrid();
+}
 
-    for (0..grid.len) |x| {
-        for (0..grid[x].len) |y| {
-            grid[x][y].Draw();
+pub fn loseReveal() void {
+    for (grid) |row| {
+        for (row) |cell| {
+            if (cell.value == .Mine and cell.state == .Hidden)
+                cell.state = .Revealed;
+            if (cell.state == .Flaged and cell.value != .Mine)
+                cell.state = .WrongFlag;
+        }
+    }
+}
+
+pub fn loseLoop() void {
+    drawGrid();
+}
+
+pub fn drawGrid() void {
+    for (grid) |row| {
+        for (row) |cell| {
+            cell.Draw();
         }
     }
 }
