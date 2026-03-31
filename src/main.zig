@@ -161,7 +161,6 @@ pub fn RevealCell(x: u64, y: u64) void {
         }
     }
     remainingCell -= 1;
-    std.debug.print("remainingCell {any}\n", .{remainingCell});
 }
 
 pub fn IdleLoop() !void {
